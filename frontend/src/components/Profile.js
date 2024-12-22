@@ -9,7 +9,7 @@ function Profile() {
         <div className="w-full md:w-2/3 lg:w-1/2 bg-white p-6 rounded-lg shadow">
             <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Profile info</h2>
-            <button className="px-4 py-1 bg-gray-800 text-white rounded-lg text-sm">Preview</button>
+            <Link to={"/mylisting"}><button className="px-4 py-1 bg-gray-800 text-white rounded-lg text-sm">My Listingcy</button></Link>
             </div>
             <div className="space-y-4">
             <div>

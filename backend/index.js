@@ -10,6 +10,9 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken')
+const multer = require('multer');
+const path = require('path')
+
 
 
 app.use(cors({
@@ -18,25 +21,50 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+app.use('/images/uploads', express.static(path.join(__dirname, 'images/uploads')));
 
 mongoose.connection.on('connected',()=>{
     console.log("database connected")
 })
 
+//multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './images/uploads')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  }
+})
 
+const upload = multer({ storage: storage })
 
-app.post('/list', async(req, res) => {
+app.post('/list',upload.array('images',5), async(req, res) => {
     const data = req.body;
+    console.log(req.files)
     try{
-        const createRoom = await room.create(data);
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: No token provided' });
+        }
+        const decoded = jwt.verify(token, process.env.SECRET);
+
+        const email = decoded.email;
+        const user1 = await user.findOne({email});
+        const createRoom = await room.create({ 
+            user:user1._id,
+            ...data, 
+            images: req.files.map(file => file.path) 
+        });
+        
         await createRoom.save();
         console.log("room data saved")
     }catch(e){
         console.log(e)
     }
-
-    console.log(req.body)
     res.send({ message: 'Data received' });
 });
 
@@ -47,6 +75,25 @@ app.get("/get-rooms",async(req,res)=>{
         res.send(rooms)
     }catch(e){
         console.log(e)
+    }
+    
+})
+
+app.get("/myListing",async(req,res)=>{
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: No token provided' });
+        }
+        const decoded = jwt.verify(token, process.env.SECRET);
+
+        const email = decoded.email;
+        const user1 = await user.findOne({email});
+        const rooms = await room.find({user :user1._id})
+        res.send(rooms)
+    } catch (error) {
+        console.error('Error decoding token:', error);
+        res.status(400).json({ message: 'Invalid token' });
     }
     
 })

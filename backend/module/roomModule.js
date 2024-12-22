@@ -10,7 +10,7 @@ const roomSchema = new mongoose.Schema({
        required: true
     },
     rate : Number,
-    pictures : {
+    images : {
         type : [String],
     },
     headline : String,

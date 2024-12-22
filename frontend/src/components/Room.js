@@ -2,7 +2,9 @@ import React from 'react';
 import { FaHeart, FaUser, FaEnvelope, FaPhone, FaMale } from 'react-icons/fa';
 
 const Room = ({props}) => {
-    console.log(props)
+
+    const imgurl = 'http://localhost:3001/' + props.images[0];
+
   return (
     <div className="max-w-sm w-2/5 m-3 rounded overflow-hidden shadow-lg border border-gray-200 bg-white">
       {/* Favorite icon and time badge */}
@@ -10,8 +12,12 @@ const Room = ({props}) => {
         <button className="absolute top-2 right-2 text-gray-400 hover:text-red-500">
           <FaHeart />
         </button>
-        <div className="bg-gray-300 h-40 flex items-center justify-center">
-          <FaUser className="text-gray-500 text-6xl" />
+        <div className="bg-gray-300 h-40 flex items-center justify-center overflow-hidden">
+            {props.images ?
+                <img src={imgurl} alt='img'></img> : 
+                <FaUser className="text-gray-500 text-6xl" />
+            }
+         
         </div>
         <span className="absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-lg">
           about 2 months ago

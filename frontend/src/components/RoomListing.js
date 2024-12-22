@@ -1,6 +1,7 @@
     import React, { useState } from 'react';
     import { FaLocationArrow } from 'react-icons/fa';
     import axios from 'axios'
+    import { useNavigate } from 'react-router-dom';
 
     const RoomListing = () => {
     const [address,setAddress] = useState("")
@@ -14,9 +15,11 @@
     const [measurement, setMeasurement] = useState('');
     const [unit, setUnit] = useState('');
     const [amenities, setAmenities] = useState([]);
+    const navigate = useNavigate();
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files);
+        console.log('Uploaded Files:', files); // Log the files
         setImages([...images, ...files]);
     };
 
@@ -29,25 +32,27 @@
     const handleContinue = async (e) => {
         e.preventDefault();
 
-        const roomData = {
-            address,
-            images, // This now contains Base64 strings
-            rate,
-            currency,
-            headline,
-            description,
-            measurement,
-            unit,
-            amenities
-        };
+        const formData = new FormData(); formData.append('address', address); images.forEach((image) => { 
+            formData.append('images', image);
+        }); 
+        formData.append('rate', rate); 
+        formData.append('currency', currency); 
+        formData.append('headline', headline); 
+        formData.append('description', description); 
+        formData.append('measurement', measurement); 
+        formData.append('unit', unit); 
+        formData.append('amenities', JSON.stringify(amenities));
 
         try {
-            const res = await axios.post("http://localhost:3001/list", roomData, {
+            const res = await axios.post("http://localhost:3001/list", formData, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                 },
+                withCredentials:true
             });
             console.log('Room listed successfully:', res.data);
+            navigate("/mylisting")
+            
         } catch (error) {
             console.error('Error listing room:', error);
         }
@@ -57,7 +62,7 @@
 
     return (
         <form className="max-w-3xl mx-auto p-4 pt-24" onSubmit={handleContinue}>
-        <h1 className="text-2xl font-bold mb-4">I'm offering an entire place</h1>
+        <h1 className="text-2xl font-bold mb-4">I'm offering a place</h1>
 
         {/* Monthly Rental Rate */}
         <div className='flex items-center border-2 my-2 px-1'>
@@ -94,7 +99,7 @@
         {/* Image Upload */}
         <div className="mb-4">
             <label className="block font-medium">Upload Images</label>
-            <input type="file" multiple onChange={handleFileUpload} className="p-2 mt-2 border rounded w-full" />
+            <input type="file" multiple onChange={handleFileUpload} className="p-2 mt-2 border rounded w-full" name='images' />
             <div className="grid grid-cols-4 gap-2 mt-2">
             {images.map((image, index) => (
                 <div key={index} className="h-24 w-full bg-gray-200 rounded flex items-center justify-center">

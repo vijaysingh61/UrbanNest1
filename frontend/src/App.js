@@ -11,6 +11,7 @@ import RoomListing from './components/RoomListing'
 import Profile from './components/Profile'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { AuthProvider } from './components/context/AuthProvider'
+import MyListing from './components/MyListing'
 
 function App() {
   return (
@@ -27,6 +28,10 @@ function App() {
                     path="/list/:"
                     element={<ProtectedRoute><RoomListing/></ProtectedRoute>}
 
+                />
+                <Route 
+                    path='/mylisting'
+                    element = {<ProtectedRoute><MyListing/></ProtectedRoute>}
                 />
                 <Route path='/for-rent/:india' element={<AvailableRooms/>}/>
                 <Route path='/' element={<HomePage></HomePage>}/>
