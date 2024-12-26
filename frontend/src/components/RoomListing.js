@@ -1,10 +1,15 @@
     import React, { useState } from 'react';
-    import { FaLocationArrow } from 'react-icons/fa';
     import axios from 'axios'
     import { useNavigate } from 'react-router-dom';
 
+    import { FiMapPin } from 'react-icons/fi';
+
     const RoomListing = () => {
-    const [address,setAddress] = useState("")
+    const [address, setAddress] = useState({
+        local: "",
+        city: "",
+        state: "",
+    });
     const [images, setImages] = useState([]);
     const [rate, setRate] = useState('');
     const [currency, setCurrency] = useState('INR');
@@ -25,14 +30,16 @@
 
     const handleAmenityClick = (amenity) => {
         setAmenities((prev) =>
-        prev.includes(amenity) ? prev.filter((a) => a !== amenity) : [...prev, amenity]
+            prev.includes(amenity) ? prev.filter((a) => a !== amenity) : [...prev, amenity]
         );
     };
 
     const handleContinue = async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(); formData.append('address', address); images.forEach((image) => { 
+        const formData = new FormData(); 
+        formData.append('address', JSON.stringify(address)); 
+        images.forEach((image) => { 
             formData.append('images', image);
         }); 
         formData.append('rate', rate); 
@@ -41,6 +48,7 @@
         formData.append('description', description); 
         formData.append('measurement', measurement); 
         formData.append('unit', unit); 
+        formData.append('isFurnished',furnished)
         formData.append('amenities', JSON.stringify(amenities));
 
         try {
@@ -58,21 +66,53 @@
         }
     };
 
+    const handleAddress = (e)=>{
+        const {name,value} = e.target;
+
+        setAddress((prev)=>({
+            ...prev,
+            [name]:value
+        }))
+    }
+
     
 
     return (
-        <form className="max-w-3xl mx-auto p-4 pt-24" onSubmit={handleContinue}>
+        <div className='pt-24'>
+        <form className="w-1/2 bg-gray-100 mx-auto p-4  mb-10" onSubmit={handleContinue}>
         <h1 className="text-2xl font-bold mb-4">I'm offering a place</h1>
 
         {/* Monthly Rental Rate */}
-        <div className='flex items-center border-2 my-2 px-1'>
-            <FaLocationArrow/>
+        <div className='flex items-center border-2 my-2 px-1 bg-white'>
+            <FiMapPin size={20} />
             <input
                 type='text' 
-                placeholder='Enter Place Address'
+                placeholder='Enter Local Address'
                 className='p-2 outline-none  w-full'
-                value={address}
-                onChange={(e)=>setAddress(e.target.value)}
+                name = "local"
+                value={address.local}
+                onChange={handleAddress}
+                required
+            />
+        </div>
+        <div className='flex items-center  my-2  gap-10'>
+            
+            <input
+                type='text' 
+                placeholder='Enter City'
+                className='p-2 outline-none  w-full border-2'
+                name='city'
+                value={address.city}
+                onChange={handleAddress}
+                required
+            />
+            <input
+                type='text' 
+                placeholder='Enter State'
+                className='p-2 outline-none  w-full border-2'
+                name='state'
+                value={address.state}
+                onChange={handleAddress}
                 required
             />
         </div>
@@ -167,11 +207,20 @@
         <div className="mb-4">
             <div className="font-medium">Amenities</div>
             <div className="grid grid-cols-3 gap-2 mt-2">
-            {['WiFi', 'Gym', 'Pool', 'Parking', 'Elevator', 'Security'].map((amenity) => (
+            {['WiFi', 'Gym', 'Pool', 'Elevator', 'Security',
+                'Storage',
+                'Parking',
+                'Laundry',
+                'Tennis',
+                'Private Bathroom',
+                'Phone Jack',
+                'Private Entrance',
+            ].map((amenity) => (
                 <button
                 key={amenity}
+                type='button'
                 onClick={() => handleAmenityClick(amenity)}
-                className={`p-2 border rounded ${amenities.includes(amenity) ? 'bg-gray-200' : ''}`}
+                className={`p-2 border rounded ${amenities.includes(amenity) ? 'bg-gray-300' : ''}`}
                 >
                 {amenity}
                 </button>
@@ -180,8 +229,9 @@
         </div>
 
         {/* Submit Button */}
-        <button type='' className="w-full p-2 bg-gray-800 text-white rounded mt-4">Continue</button>
+        <input type='submit' className="w-full p-2 bg-gray-800 text-white rounded mt-4"></input>
         </form>
+        </div>
     );
     };
 

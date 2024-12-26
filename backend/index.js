@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken')
 const multer = require('multer');
 const path = require('path')
+const axios = require('axios');
 
 
 
@@ -32,7 +33,7 @@ mongoose.connection.on('connected',()=>{
 //multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './images/uploads')
+    cb('', './images/uploads')
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
@@ -41,6 +42,28 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
+
+//getin coordinates
+async function getLatLngFromAddress(addressString) {
+    const apiKey = process.env.OPENCAGE_API_KEY; // Replace with your OpenCage API key
+    const encodedAddress = encodeURIComponent(addressString);
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodedAddress}&key=${apiKey}`;
+
+    try {
+        const response = await axios.get(url);
+        const data = response.data;
+
+        if (data.status.code === 200 && data.results.length > 0) {
+            const location = data.results[0].geometry;
+            return [ location.lat, location.lng ];
+        } else {
+            throw new Error(`Geocoding error: ${data.status.message}`);
+        }
+    } catch (error) {
+        console.error('Error fetching geocoding data:', error.message);
+        return null;
+    }
+}
 
 app.post('/list',upload.array('images',5), async(req, res) => {
     const data = req.body;
@@ -53,10 +76,20 @@ app.post('/list',upload.array('images',5), async(req, res) => {
         const decoded = jwt.verify(token, process.env.SECRET);
 
         const email = decoded.email;
-        const user1 = await user.findOne({email});
+        const user1 = await profile.findOne({email});
+        const address = JSON.parse(req.body.address);
+        
+        const fullAddress = `${address.local}, ${address.city}, ${address.state}`;
+
+        const coordinates = await getLatLngFromAddress(fullAddress);
+
+        if (!coordinates) {
+            return res.status(400).json({ message: 'Unable to fetch coordinates for the provided address' });
+        }
         const createRoom = await room.create({ 
-            user:user1._id,
+            profile:user1._id,
             ...data, 
+            address : {...address,coordinates},
             images: req.files.map(file => file.path) 
         });
         
@@ -69,10 +102,25 @@ app.post('/list',upload.array('images',5), async(req, res) => {
 });
 
 app.get("/get-rooms",async(req,res)=>{
-    
+    const {budget,location} = req.query;
+    //console.log(budget,location)
     try{
-        const rooms = await room.find();
+        const query = {}
+        if (location) {
+            query['address.city'] = new RegExp(`^${location}$`, 'i'); 
+        }
+
+        if (budget.lower !== '' && budget.upper !== '') {
+            query.rate = { $gte: budget.lower, $lte: budget.upper }; 
+        } else if (budget.lower !== '') {
+            query.rate = { $gte: budget.lower }; 
+        } else if (budget.upper !== '') {
+            query.rate = { $lte: budget.upper }; 
+        }
+        //console.log(query)
+        const rooms = await room.find(query).populate('profile','name age profilePicture');
         res.send(rooms)
+
     }catch(e){
         console.log(e)
     }
@@ -88,14 +136,58 @@ app.get("/myListing",async(req,res)=>{
         const decoded = jwt.verify(token, process.env.SECRET);
 
         const email = decoded.email;
-        const user1 = await user.findOne({email});
-        const rooms = await room.find({user :user1._id})
+        const user1 = await profile.findOne({email});
+        const rooms = await room.find({profile :user1._id}).populate('profile','name age profilePicture')
         res.send(rooms)
     } catch (error) {
         console.error('Error decoding token:', error);
         res.status(400).json({ message: 'Invalid token' });
     }
     
+})
+
+app.get("/get-profile",async(req,res)=>{
+     try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: No token provided' });
+        }
+        const decoded = jwt.verify(token, process.env.SECRET);
+
+        const email = decoded.email;
+        const profile1 = await profile.findOne({email});
+        res.send(profile1);
+    } catch (error) {
+        console.error('Error decoding token:', error);
+        res.status(400).json({ message: 'Invalid token' });
+    }
+})
+
+app.post("/profile-pic",upload.single("profilePicture"), async(req,res)=>{
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: No token provided' });
+        }
+        const decoded = jwt.verify(token, process.env.SECRET);
+
+        const email = decoded.email;
+        const updatedprofile = await profile.findOneAndUpdate(
+            { email },
+            {
+                $set: {
+                    profilePicture: req.file.path // Set the new profile picture
+                }
+            },
+            { new: true } // Return the updated document
+        );
+        console.log("pic updated")
+        res.send(updatedprofile)
+        
+    } catch (error) {
+        console.error('Error decoding token:', error);
+        res.status(400).json({ message: 'Invalid token' });
+    }
 })
 
 app.post("/signup",async(req,res)=>{
@@ -109,6 +201,8 @@ app.post("/signup",async(req,res)=>{
                 // Store hash in your password DB
                 const newUser = await user.create({username,email,password:hash})
                 await newUser.save();
+                const newProfile = await  profile.create({user:newUser._id,name:username,email})
+                await newProfile.save();
                 let token = jwt.sign({email},process.env.SECRET);
                 res.cookie("token", token, {
                     httpOnly: true,
@@ -150,6 +244,11 @@ app.post("/login",async(req,res)=>{
     
 })
 
+app.get("/logout",async(req,res)=>{
+    res.cookie('token', '', { expires: new Date(0), httpOnly: true, secure: true, path: '/' });
+    res.send('Logged out');
+})
+
 app.get('/api/check-auth', (req, res) => {
     const token = req.cookies.token;
     if (!token) return res.json({ authenticated: false });
@@ -159,8 +258,6 @@ app.get('/api/check-auth', (req, res) => {
         res.json({ authenticated: true , user: decoded.email });
     });
 });
-
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

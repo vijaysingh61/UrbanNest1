@@ -46,7 +46,7 @@ const SignUp = () => {
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     {/* Username */}
                     <div>
-                        <label htmlFor="username" className="block text-gray-700 font-semibold">Username</label>
+                        <label htmlFor="username" className="block text-gray-700 font-semibold">Name</label>
                         <input 
                             type="text" 
                             id="username" 
@@ -54,7 +54,7 @@ const SignUp = () => {
                             required 
                             value={username||''}
                             onChange={(e)=>setUsername(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                         />
                     </div>
 
@@ -68,7 +68,7 @@ const SignUp = () => {
                             required
                             value={email} 
                             onChange={(e)=>setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                         />
                     </div>
 
@@ -82,7 +82,7 @@ const SignUp = () => {
                             required 
                             value={password}
                             onChange={(e)=>setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                         />
                     </div>
 
@@ -94,7 +94,7 @@ const SignUp = () => {
                             id="confirm-password" 
                             name="confirm-password" 
                             required 
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                         />
                     </div>
 
@@ -102,7 +102,7 @@ const SignUp = () => {
                     <div className="pt-4">
                         <button 
                             type="submit" 
-                            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 rounded-lg transition duration-200"
+                            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition duration-200"
                         >
                             Sign Up
                         </button>
@@ -112,7 +112,7 @@ const SignUp = () => {
                 {/* Login Link */}
                 <p className="text-center text-gray-600 mt-4">
                     Already have an account?{' '}
-                    <Link to="/login"  className="text-yellow-500 font-semibold hover:underline">Log In</Link>
+                    <Link to="/login"  className="text-gray-500 font-semibold hover:underline">Log In</Link>
                 </p>
             </div>
         </div>

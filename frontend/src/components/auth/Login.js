@@ -26,7 +26,7 @@ const Login = () => {
                  withCredentials: true
             })
             await checkAuthStatus()
-            navigate("/profile/"+responce.data.username)
+            navigate("/profile/"+responce.data.name)
 
         }catch(e){
             console.log(e)
@@ -34,7 +34,7 @@ const Login = () => {
     }
 
     return (
-        <div className="bg-gray-100 flex items-center justify-center pt-20 min-h-screen">
+        <div className="bg-gray-100 flex items-center justify-center pt-40 pb-24">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Log In to Your Account</h2>
                 
@@ -49,7 +49,7 @@ const Login = () => {
                             required 
                             value = {email}
                             onChange = {(e)=>setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                         />
                     </div>
 
@@ -63,7 +63,7 @@ const Login = () => {
                             required 
                             value={password}
                             onChange={(e)=>setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                         />
                     </div>
 
@@ -71,7 +71,7 @@ const Login = () => {
                     <div className="pt-4">
                         <button 
                             type="submit" 
-                            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 rounded-lg transition duration-200"
+                            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition duration-200"
                         >
                             Log In
                         </button>
@@ -81,7 +81,7 @@ const Login = () => {
                 {/* Sign Up Link */}
                 <p className="text-center text-gray-600 mt-4">
                     Don't have an account?{' '}
-                    <Link to="/signup" className="text-yellow-500 font-semibold hover:underline">Sign Up</Link>
+                    <Link to="/signup" className="text-gray-500 font-semibold hover:underline">Sign Up</Link>
                 </p>
             </div>
         </div>

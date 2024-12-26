@@ -1,91 +1,138 @@
-import React, { useEffect, useState } from 'react';
-import "./styles/homepage.css"
-import NavBar from './NavBar'
+import React, { } from 'react';
+
+
 import cities from './cityData';
 import { Link } from 'react-router-dom';
-import { useContext } from 'react';
-import { SearchContext } from './context/SearchContext';
+import { BsPlusCircle } from 'react-icons/bs';
+import HomeFeature from './HomeFeature';
+import HomeFooter from './HomeFooter';
+import HomeSearch from './HomeSearch';
+
 
 function HomePage() {
 
-    const [serchedCity,setSerchedCity] = useState([{
-        "city": "Delhi", 
-        "lat": "28.6100", 
-        "lng": "77.2300", 
-        "country": "India", 
-        "iso2": "IN", 
-        "admin_name": "Delhi", 
-        "capital": "admin", 
-        "population": "32226000", 
-        "population_proper": "16753235"
-    }])
-
-   const {search,setSearch} = useContext(SearchContext)
-
-   const handleSearch = (e)=>{
-        setSearch(e.target.value);
-   }
-
-   useEffect(()=>{
-        let a = cities.filter((city)=> city.city.toLowerCase().includes(search.toLowerCase()));
-        a = a.splice(0,10);
-        setSerchedCity(a)
-        
-   },[search])
-
   return (
-    <div className="homepage m-0 p-0 w-full">
+    <div className="homepage m-0 p-0 w-full  bg-white" >
         
-      <header className="header mt-20 w-full">
-        <h1>Find and Rent Your Perfect Room</h1>
-        <div className='text-left'>
-            <input type="text" placeholder="Search locations..." className="search-bar text-black outline-none" onChange={handleSearch} value={search} />
-            <Link to={"/for-rent/:india"} className=''>
-                <button className='w-8 h-12 -ml-1 rounded-e-xl bg-yellow-400 text-black'> &gt; </button>
-            </Link>
+      <header className="header pt-24 w-full pl-10 bg-white">
+        <div className='flex  justify-between'>
+            <div>
+                <div className=" mb-10 pt-10">
+                    <h1 className=" text-5xl font-semibold mb-4 text-gray-700 mt-10">Rooms for rent</h1>
+                    <p className="text-gray-400 text-xl px-2">Find and rent your perfect room</p>
+                </div>
+                
+                {/* Search Bar */}
+                <HomeSearch isHome={true}/>
+            </div>
+            <img alt='lodo' className='w-2/5' src={require('./images/img.webp')}></img>
         </div>
         
-        <div className='options w-full rounded-2xl p-4 bg-slate-300 w-1/3 '>
-            {
-                serchedCity.map((city,index)=>{
-                    return (
-                        <div key={index} className='text-left bg-slate-500 rounded-lg p-2 my-1'>
-                            {city.city} , {city.admin_name} </div>
-                    )
-                })
-            }
-        </div>
+        
 
-        <div className="actions">
-          <Link to={"/for-rent/:"}><button className="find-place">Find a Place</button></Link>
-          <Link to={"/list/:"}><button className="list-place">List a Place</button></Link>
+
+        {/* Buttons for Listing and Finding a Place */}
+        <div className="flex  gap-24 mb-6 w-full pl-10">
+            {/* List a place */}
+            <div className="w-2/5 h-48 bg-gray-300 rounded-es-[5rem] rounded-se-[5rem] shadow-lg flex flex-col items-center justify-center ">
+                <Link to={"/list/:"}><button className="flex items-center gap-2 bg-black text-white px-10 py-3 rounded-lg font-semibold">
+                    <BsPlusCircle size={20} />
+                    List a place
+                </button></Link>
+            </div>
+
+            {/* Find a place */}
+            <div className="w-2/5 h-48 bg-gray-200 rounded-lg shadow-lg flex rounded-ss-[5rem] rounded-ee-[5rem] flex-col items-center justify-center">
+                <Link to={"/for-rent/:"}><button className="flex items-center gap-2 bg-black text-white px-10 py-3 rounded-lg font-semibold">
+                    <BsPlusCircle size={20} />
+                    Find a place
+                </button></Link>
+            </div>
         </div>
       </header>
 
-      <section className="popular-cities">
-        <h2>Popular Cities</h2>
-        <div className="cities-grid">
-          <div className="city">New York</div>
-          <div className="city">Los Angeles</div>
-          <div className="city">San Francisco</div>
-          {/* Add more cities as needed */}
-        </div>
-      </section>
+      {/** view popular cities */}
 
-      <section className="trusted-by">
-        <h2>Trusted By the World's Best</h2>
-        <div className="media-logos">
-          {/* Logos from press outlets like Mashable, Lifehacker, etc. */}
+       <div className="py-10 px-12">
+            <h2 className="text-4xl font-light mb-6">View rooms in popular cities</h2>
+            <div className="grid grid-cols-5 gap-4">
+                {cities.slice(0,10).map((city, index) => (
+                    <div
+                        key={index}
+                        className="relative rounded-lg overflow-hidden shadow-md"
+                    >
+                        <img
+                            src={city.image}
+                            alt={city.city}
+                            className="w-full h-40 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end">
+                            <p className="text-white font-medium p-2">{city.city}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
-      </section>
 
-      <footer className="footer w-full">
-        <p>Roomster © 2024</p>
-        <div className="app-promotion">
-          <p>Download our app for the best experience!</p>
-          {/* Add app store links */}
+        {/**news */}
+        <div className="p-10  bg-white">
+            {/* Heading */}
+            <h2 className="text-left text-3xl font-light text-gray-700 mb-10">
+                Trusted by India's best
+            </h2>
+
+            {/* Logos */}
+            <div className="flex justify-between items-center flex-wrap mb-6">
+                {/* Logo placeholders */}
+                <div className="text-gray-400 text-xl font-bold">
+                <span className="block p-4 bg-gray-200 rounded-lg flex items-center justify-center">
+                    The Hindu
+                </span>
+                </div>
+                <div className="text-gray-400 text-xl font-bold">
+                <span className="block p-4 bg-gray-200 rounded-lg flex items-center justify-center">
+                    Times of India
+                </span>
+                </div>
+                <div className="text-gray-400 text-xl font-bold">
+                <span className="block p-4 bg-gray-200 rounded-lg flex items-center justify-center">
+                    Hindustan Times
+                </span>
+                </div>
+                <div className="text-gray-400 text-xl font-bold">
+                <span className="block p-4 bg-gray-200 rounded-lg flex items-center justify-center">
+                    Indian Express
+                </span>
+                </div>
+                <div className="text-gray-400 text-xl font-bold">
+                <span className="block  p-4 bg-gray-200 rounded-lg flex items-center justify-center">
+                    Dainik Bhaskar
+                </span>
+                </div>
+            </div>
+            <button className="bg-gray-800 text-white text-xl font-semibold px-24 py-3 rounded-lg shadow hover:bg-gray-900 transition">
+                More in press
+            </button>
+
+            </div>
+
+                {/**homw feature */}
+        <HomeFeature/>
+
+        {/**cities */}
+        <div className=" px-10">
+            <h2 className="text-4xl font-light mb-12">Popular cities</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {cities.slice(0,50).map((city, index) => (
+                    <div key={index} className="text-gray-700 font-semibold">
+                        {city.city}
+                    </div>
+                ))}
+            </div>
         </div>
-      </footer>
+
+        <HomeFooter/>
+
     </div>
   );
 }

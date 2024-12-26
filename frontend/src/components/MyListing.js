@@ -1,12 +1,14 @@
     import React, { useEffect, useState } from "react";
     import Room from "./Room";
     import axios from "axios";
+import { FaUser } from "react-icons/fa";
 
     const MyListing = () => {
 
         const [roomArr,setRoomArr] = useState([]);
 
         useEffect(()=>{
+            
             const idk = async()=>{
                 try{
                     const responce = await axios.get('http://localhost:3001/myListing',{
@@ -24,18 +26,25 @@
             }
             idk();
         },[])
+        const imgurl = roomArr[0] && 'http://localhost:3001/' + roomArr[0].profile.profilePicture;
 return (
     <div className="p-6 bg-gray-100 min-h-screen pt-24 flex flex-col justify-center items-center">
         {/* User Profile Section */}
         <div className="flex items-center space-x-4 bg-white p-4 rounded shadow w-2/3 justify-between">
-            
             <div className="flex items-center">
-                <div className="w-16 h-16 bg-gray-300 rounded-full"></div>
-            <h2 className="text-xl font-medium">vijay, 34</h2>
+                <div className=" h-16 w-16 rounded-full flex items-center overflow-hidden bg-gray-200 mx-2  justify-center text-gray-400">
+                    {roomArr[0] && roomArr[0].profile.profilePicture ?                            
+                        <img src={imgurl} className="w-full h-full" alt='profile'/> :
+                        <FaUser className="text-gray-500 mt-1 text-4xl" />
+                    }
+                </div>
+            <h2 className="text-xl font-medium capitalize">{roomArr[0] && roomArr[0].profile.name},
+                <span className="text-md text-gray-700">{roomArr[0] && roomArr[0].profile.age || " age"}</span>
+            </h2>
             <span className="text-gray-500">♂️</span>
             </div>
-            <div className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm">
-            Listings 2
+            <div className="ml-auto font-semibold bg-gray-200 text-gray-700 px-4 py-2 rounded-sm text-sm">
+            Listing : {roomArr.length}
             </div>
         </div>
 
@@ -43,7 +52,8 @@ return (
         <div className="mt-6 flex w-2/3 flex-wrap">
             {/* Listing  */}
             {roomArr.map((value,idx)=>(
-                <Room props={value} key={idx}/>
+                <div key={idx} className="w-1/2 p-2">
+                <Room props={value} /></div>
             ))}
 
         </div>

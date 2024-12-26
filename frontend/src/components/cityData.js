@@ -1,5 +1,16 @@
 const cities = [
     {
+      city: "",
+      lat: "28.6100",
+      lng: "77.2300",
+      country: "India",
+      iso2: "IN",
+      admin_name: "India",
+      capital: "admin",
+      population: "32226000",
+      population_proper: "16753235",
+    },
+    {
         "city": "Delhi", 
         "lat": "28.6100", 
         "lng": "77.2300", 

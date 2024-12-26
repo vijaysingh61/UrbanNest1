@@ -1,6 +1,6 @@
 import React from 'react'
 import HomePage from './components/HomePage'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes,useLocation } from 'react-router-dom'
 import SignUp from './components/auth/SignUp'
 import Login from './components/auth/Login'
 import NavBar from './components/NavBar'
@@ -12,8 +12,11 @@ import Profile from './components/Profile'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { AuthProvider } from './components/context/AuthProvider'
 import MyListing from './components/MyListing'
+import Footer from './components/Footer'
+import RoomDetail from './components/RoomDetail'
 
 function App() {
+    const location = useLocation();
   return (
     <AuthProvider>
         <SearchContextProvider className="">
@@ -21,7 +24,8 @@ function App() {
             <Routes>
                 <Route
                     path="/profile/:username"
-                    element={<ProtectedRoute><Profile /></ProtectedRoute>}
+                     element={<ProtectedRoute><Profile /></ProtectedRoute>}
+                    //element = {<Profile></Profile>}
 
                 />
                 <Route
@@ -37,7 +41,10 @@ function App() {
                 <Route path='/' element={<HomePage></HomePage>}/>
                 <Route path='/signup' element={<SignUp/>}></Route>
                 <Route path='/login' element={<Login/>}/>
+                <Route path='/room-detail' element = {<RoomDetail/>}/>
             </Routes>
+            
+            {location.pathname !== '/' && <Footer />}
 
         </SearchContextProvider>
     </AuthProvider>

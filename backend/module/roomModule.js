@@ -1,12 +1,33 @@
 const mongoose = require('mongoose')
 
+const addressSchema = new mongoose.Schema({
+    local: {
+        type: String,
+        required: true,
+        trim: true, 
+    },
+    city: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    state: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    coordinates:{
+        type:Array
+    }
+});
+
 const roomSchema = new mongoose.Schema({
-    user : {
+    profile : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "user"
+        ref : "profile"
     },
     address : {
-       type: String,
+       type: addressSchema,
        required: true
     },
     rate : Number,
@@ -16,6 +37,7 @@ const roomSchema = new mongoose.Schema({
     headline : String,
     description : String,
     measurement : Number,
+    isFurnished : Boolean,
     amenities : []
 
 })
