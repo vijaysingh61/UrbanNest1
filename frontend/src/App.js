@@ -14,11 +14,13 @@ import { AuthProvider } from './components/context/AuthProvider'
 import MyListing from './components/MyListing'
 import Footer from './components/Footer'
 import RoomDetail from './components/RoomDetail'
+import UserDataProvider from './components/context/userData'
 
 function App() {
     const location = useLocation();
   return (
     <AuthProvider>
+        <UserDataProvider>
         <SearchContextProvider className="">
             <NavBar/>
             <Routes>
@@ -47,6 +49,7 @@ function App() {
             {location.pathname !== '/' && <Footer />}
 
         </SearchContextProvider>
+        </UserDataProvider>
     </AuthProvider>
   )
 }

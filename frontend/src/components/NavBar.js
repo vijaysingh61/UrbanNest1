@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Link,useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { AuthContext } from './context/AuthProvider'
 import { FaUser } from 'react-icons/fa';
+import { UserData } from './context/userData';
 
 function NavBar() {
-    const location = useLocation();
-    const userData = location.state?.data;
+    const {userInfo} = useContext(UserData)
     const {isAuthenticated,checkAuthStatus} = useContext(AuthContext);
     useEffect(()=>{
         checkAuthStatus();
     })
-    const imgurl = userData && 'http://localhost:3001/' + userData.profilePicture;
+    const imgurl = userInfo && 'http://localhost:3001/' + userInfo.profilePicture;
   return (
     <div className='w-full h-20 fixed z-50'>
         <nav className="bg-white shadow-lg p-4 h-20 flex items-center z-50">
@@ -20,12 +20,12 @@ function NavBar() {
                 </Link>
                 {isAuthenticated?
                     <Link to={"/profile/:"}>
-                        <div className=" h-7 rounded-md p-5 flex items-center hover:bg-gray-200 justify-center text-gray-400">
-                            {userData && userData.profilePicture ?
-                                <img src={imgurl} alt='profile'/> :
+                        <div className=" h-7 rounded-md p-5 flex items-center border border-gray-200 hover:bg-gray-200 justify-center text-gray-400">
+                            {userInfo && userInfo.profilePicture ?
+                                <div className='w-7 h-7 rounded-full overflow-hidden'><img src={imgurl} className='w-full h-full' alt='profile'/></div> :
                                 <FaUser className="text-gray-500 mt-1 " />
                             }
-                            <p className='text-black mx-2'>vijay</p>
+                            <p className='text-black mx-2 font-semibold capitalize'>{userInfo && userInfo.name}</p>
                         </div>
                     </Link>:
                     <div className="space-x-4">

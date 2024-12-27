@@ -3,19 +3,21 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { TbCameraPlus } from 'react-icons/tb'
 import { AuthContext } from './context/AuthProvider'
+import { UserData } from './context/userData'
 
 
 
 function Profile() {
-    const [userData,setUserData] = useState([])
     const [editBirth,setEditBirth]  = useState(false)
     const [editBio,setEditBio]  = useState(false)
     const [editPhone,setEditPhone]  = useState(false)
     const [editGender,setEditGender]  = useState(false)
-    const imgurl = 'http://localhost:3001/' + userData.profilePicture
     
-
+    
+    const {userInfo,setUserInfo} = useContext(UserData)
+    const imgurl = userInfo && 'http://localhost:3001/' + userInfo.profilePicture
     useEffect(()=>{
+        console.log(userInfo)
         const idk = async()=>{
             const responce = await axios.get("http://localhost:3001/get-profile",{
                 headers: {
@@ -23,11 +25,9 @@ function Profile() {
                     },
                 withCredentials:true
             })
-            setUserData(responce.data)
+            setUserInfo(responce.data)
         }
         idk();
-        
-        
     },[])
 
    
@@ -46,7 +46,7 @@ function Profile() {
             });
             const data = res.data;
             console.log('profile updated successfully:', res.data);
-            navigate("/",{ state: { data } })
+            window.location.reload();
             
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -90,7 +90,7 @@ function Profile() {
                 <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-gray-600 text-sm">Full name</h3>
-                    <p className="text-gray-900">{userData.name || "N/A"}</p>
+                    <p className="text-gray-900">{userInfo && userInfo.name || "N/A"}</p>
                 </div>
                 </div>
                 
@@ -100,7 +100,7 @@ function Profile() {
                 <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-gray-600 text-sm">Email</h3>
-                    <p className="text-gray-900">{userData.email || "N/A"}</p>
+                    <p className="text-gray-900">{userInfo && userInfo.email || "N/A"}</p>
                 </div>
                 </div>
                 <hr />
@@ -114,7 +114,7 @@ function Profile() {
                         <input type='number' defaultValue={91} className='w-12 outline-none bg-gray-100 p-1 border-2 '></input>
                         <input type='text' className='border-2 p-1 px-2 outline-none bg-gray-100'></input>
                     </div>:
-                    <p className="text-gray-900">{userData.phone || "N/A"}</p>
+                    <p className="text-gray-900">{userInfo && userInfo.phone || "N/A"}</p>
                     }
                     
                 </div>
@@ -127,7 +127,7 @@ function Profile() {
                 <div className='w-2/3'>
                     <h3 className="text-gray-600 text-sm">Birthday</h3>
                     {editBirth?
-                       <Birth></Birth> : <p className="text-gray-900">{userData.birthday || "N/A"}</p>
+                       <Birth></Birth> : <p className="text-gray-900">{userInfo && userInfo.birthday || "N/A"}</p>
                     }
                     
                 </div>
@@ -139,7 +139,7 @@ function Profile() {
                 <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-gray-600 text-sm">Identified as</h3>
-                    {editGender?<Gender/>:<p className="text-gray-900">{userData.gender || "N/A"}</p>}
+                    {editGender?<Gender/>:<p className="text-gray-900">{userInfo && userInfo.gender || "N/A"}</p>}
                     
                 </div>
                 <a href="#edit" onClick={()=>setEditGender((prev)=>!prev)} className="text-blue-600 hover:underline">{editGender?"cancel":"Edit"}</a>
@@ -170,7 +170,7 @@ function Profile() {
                             <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800" type='submit'>
                                 Save
                             </button>
-                        </form>:<p className="text-gray-900">{userData.about || "Add a description"}</p>}
+                        </form>:<p className="text-gray-900">{userInfo && userInfo.about || "Add a description"}</p>}
                     
                 </div>
                 <a href="#edit" onClick={()=>setEditBio((prev)=>!prev)} className="text-blue-600 hover:underline">{editBio?"cancel":"Edit"}</a>
@@ -182,7 +182,7 @@ function Profile() {
         <div className="w-full md:w-1/3 lg:w-1/4  space-y-4 flex flex-col items-center ">
             <div className='bg-white p-6 rounded-lg shadow flex flex-col items-center '>
             <div className="w-72 h-72 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-4xl mb-5">
-                {userData.profilePicture ?
+                {userInfo && userInfo.profilePicture ?
                     <img src={imgurl} className='w-full h-full rounded-md' alt='profile'/> :
                     <span>👤</span>
                 }
