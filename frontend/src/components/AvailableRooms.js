@@ -53,7 +53,7 @@ const AvailableRooms = () => {
         const idk = async()=>{
             
             try{
-                const responce = await axios.get('http://localhost:3001/get-rooms',
+                const responce = await axios.get('https://urban-nest-mygv.vercel.app/get-rooms',
                 {
                      params: {
                         budget: bgInput,
