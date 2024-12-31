@@ -18,13 +18,11 @@ const fs = require('fs')
 
 
 app.use(cors({
-    origin: 'https://urban-nest-ruby.vercel.app', 
-    credentials: true, 
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"], 
+    origin: 'https://urban-nest-ruby.vercel.app',
+    credentials: true,
+    methods : ["GET","POST"],
+    allowedHeaders: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"],
 }));
-
-app.options('*', cors());
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
