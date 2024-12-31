@@ -2,6 +2,7 @@
     import Room from "./Room";
     import axios from "axios";
 import { FaUser } from "react-icons/fa";
+import { IoMdFemale, IoMdMale } from "react-icons/io";
 import { UserData } from "./context/userData";
 
     const MyListing = () => {
@@ -41,9 +42,9 @@ return (
                     }
                 </div>
             <h2 className="text-xl font-medium capitalize">{userInfo && userInfo.name},
-                <span className="text-md text-gray-700">{userInfo && userInfo.age || " age"}</span>
+                <span className="text-md text-gray-700">{userInfo && " "+userInfo.age || " age"}</span>
             </h2>
-            <span className="text-gray-500">♂️</span>
+            <span className="text-yellow-600 font-bold mx-2">{userInfo && userInfo.gender === 'Male'?<IoMdMale />:<IoMdFemale />}</span>
             </div>
             <div className="ml-auto font-semibold bg-gray-200 text-gray-700 px-4 py-2 rounded-sm text-sm">
             Listing : {roomArr.length}

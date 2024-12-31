@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { SearchContext } from './context/SearchContext';
-import cities from './cityData';
+import cities,{cities2} from './cityData';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Room from './Room';
@@ -17,7 +17,15 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-
+function findCityWithState(query) {
+        for (const [state, cities] of Object.entries(cities2)) {
+            const city = cities.find(city => city.toLowerCase() === query.toLowerCase());
+            if (city) {
+            return { city, state };
+            }
+        }
+        return {"city":"india","state":"india"}; // Return null if no match is found
+}
 
 const AvailableRooms = () => {
 
@@ -29,8 +37,9 @@ const AvailableRooms = () => {
         });
 
     const { search } = useContext(SearchContext);
-    const city = cities.find((e) => e.city.toLowerCase().includes(search.toLowerCase()));
-    const center = city ? [city.lat, city.lng] : [20.5937, 78.9629]; 
+    
+
+    const city = findCityWithState(search);
     const [roomArr,setRoomArr] = useState([]);
 
     const [bgClick,setBgClick] = useState(false)
@@ -88,13 +97,13 @@ const AvailableRooms = () => {
                 <div className="text-gray-500 text-lg font-semibold flex items-center">
                     <span className='mx-1'><AiOutlineHome /> </span>
                     <span className="hover:text-gray-700 cursor-pointer">&gt; India </span>
-                    {city && <span className="hover:text-gray-700 mx-1 cursor-pointer"> &gt; {city.admin_name}</span>}
+                    {city && <span className="hover:text-gray-700 mx-1 cursor-pointer"> &gt; {city.state}</span>}
                     {city && <span className="hover:text-gray-700 mx-1 cursor-pointer"> &gt; {city.city}</span>}
                 </div>
 
                 {/* Header */}
                 <h1 className="text-3xl font-medium">
-                    Rooms for rent in {city && city.city + ","} {city && city.admin_name + ","} India
+                    Rooms for rent in {city && city.city + ","} {city && city.state + ","} India
                 </h1>
 
                 {/* Filters */}

@@ -1,15 +1,23 @@
-import React, { } from 'react';
+import React, { useContext } from 'react';
 
 
 import cities from './cityData';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BsPlusCircle } from 'react-icons/bs';
 import HomeFeature from './HomeFeature';
 import HomeFooter from './HomeFooter';
 import HomeSearch from './HomeSearch';
+import { SearchContext } from './context/SearchContext';
+
 
 
 function HomePage() {
+    const { search, setSearch } = useContext(SearchContext);
+    const navigate = useNavigate();
+    const handleClick = (e)=>{
+        setSearch(e);
+        navigate("/for-rent/:")
+    }
 
   return (
     <div className="homepage m-0 p-0 w-full  bg-white" >
@@ -34,16 +42,18 @@ function HomePage() {
         {/* Buttons for Listing and Finding a Place */}
         <div className="flex  gap-24 mb-6 w-full pl-10">
             {/* List a place */}
-            <div className="w-2/5 h-48 bg-gray-300 rounded-es-[5rem] rounded-se-[5rem] shadow-lg flex flex-col items-center justify-center ">
-                <Link to={"/list/:"}><button className="flex items-center gap-2 bg-black text-white px-10 py-3 rounded-lg font-semibold">
+            <div className="w-2/5 relative cursor-pointer hover:shadow-xl h-48  overflow-hidden rounded-es-[5rem] rounded-se-[5rem] shadow-lg flex flex-col items-center justify-center " 
+            ><img className='absolute w-full h-full z-0' src={require('./images/list.jpg')}></img>
+            <Link to={"/list/:"}><button className="flex items-center gap-2 relative z-10 bg-gray-800 text-white px-16 py-3 rounded-lg font-semibold">
                     <BsPlusCircle size={20} />
                     List a place
                 </button></Link>
             </div>
 
             {/* Find a place */}
-            <div className="w-2/5 h-48 bg-gray-200 rounded-lg shadow-lg flex rounded-ss-[5rem] rounded-ee-[5rem] flex-col items-center justify-center">
-                <Link to={"/for-rent/:"}><button className="flex items-center gap-2 bg-black text-white px-10 py-3 rounded-lg font-semibold">
+            <div className="w-2/5 overflow-hidden relative cursor-pointer hover:shadow-xl h-48 bg-gray-200 rounded-lg shadow-lg flex rounded-ss-[5rem] rounded-ee-[5rem] flex-col items-center justify-center">
+            <img className='absolute w-full h-full z-0' src={require('./images/find.jpeg')}></img>
+                <Link to={"/for-rent/:"}><button className="flex items-center relative z-10 gap-2 bg-gray-800 text-white px-16 py-3 rounded-lg font-semibold">
                     <BsPlusCircle size={20} />
                     Find a place
                 </button></Link>
@@ -58,8 +68,9 @@ function HomePage() {
             <div className="grid grid-cols-5 gap-4">
                 {cities.slice(0,10).map((city, index) => (
                     <div
+                        onClick={()=>handleClick(city.city)}
                         key={index}
-                        className="relative rounded-lg overflow-hidden shadow-md"
+                        className="relative rounded-lg overflow-hidden shadow-md cursor-pointer hover:shadow-lg "
                     >
                         <img
                             src={city.image}
@@ -124,8 +135,8 @@ function HomePage() {
             <h2 className="text-4xl font-light mb-12">Popular cities</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {cities.slice(0,50).map((city, index) => (
-                    <div key={index} className="text-gray-700 font-semibold">
-                        {city.city}
+                    <div key={index} onClick={()=>handleClick(city.city)} className="text-gray-700 font-semibold ">
+                       <span className='cursor-pointer hover:underline'>{city.city}</span> 
                     </div>
                 ))}
             </div>

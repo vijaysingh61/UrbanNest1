@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import cities from "./cityData";
+import {cities2} from "./cityData";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { SearchContext } from "./context/SearchContext";
@@ -9,14 +9,7 @@ function HomeSearch({ isHome }) {
   const [serchedCity, setSerchedCity] = useState([
     {
       city: "India",
-      lat: "28.6100",
-      lng: "77.2300",
-      country: "India",
-      iso2: "IN",
-      admin_name: "India",
-      capital: "admin",
-      population: "32226000",
-      population_proper: "16753235",
+      state:"india"
     },
   ]);
 
@@ -47,10 +40,20 @@ function HomeSearch({ isHome }) {
   };
 
   useEffect(() => {
-    let a = cities.filter((city) =>
-      (city.city+" "+city.admin_name).toLowerCase().includes(search1.toLowerCase())
-    );
-    a = a.splice(0, 5);
+    const a = [];
+    let counter = 0;
+    for (const state in cities2) {
+        cities2[state].forEach(city => {
+        if (city.toLowerCase().includes(search1.toLowerCase())) {
+            if(counter>5){
+                setSerchedCity(a);
+                return;
+            }
+            counter++;
+            a.push({ city, state });
+        }
+        });
+    };
     setSerchedCity(a);
   }, [search1, search]);
 
@@ -123,7 +126,7 @@ function HomeSearch({ isHome }) {
                 <FiMapPin size={20} />
               </span>
               <span>
-                {city.city?city.city +",":""} {city.admin_name}
+                {city.city?city.city +",":""} {city.state}
               </span>
             </div>
           );

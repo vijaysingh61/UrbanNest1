@@ -203,7 +203,7 @@ function Profile() {
                             </button>
                         </>
                     ) : (
-                        <p className="text-gray-900">{userInfo?.birthday || "N/A"}</p>
+                        <p className="text-gray-900">{userInfo? new Date(userInfo.birthday).toUTCString() : "N/A"}</p>
                     )}
                 </div>
                 <a

@@ -13,6 +13,7 @@ const jwt = require('jsonwebtoken')
 const multer = require('multer');
 const path = require('path')
 const axios = require('axios');
+const fs = require('fs')
 
 
 
@@ -79,7 +80,7 @@ app.post('/list',upload.array('images',5), async(req, res) => {
         const user1 = await profile.findOne({email});
         const address = JSON.parse(req.body.address);
         
-        const fullAddress = `${address.local}, ${address.city}, ${address.state}`;
+        const fullAddress = `${address.local}, ${address.city}, ${address.state} , india`;
 
         const coordinates = await getLatLngFromAddress(fullAddress);
 
@@ -210,7 +211,12 @@ app.put("/update-profile", async (req, res) => {
     // Build the update object dynamically
     const updateFields = {};
     if (phone) updateFields.phone = phone.toString();
-    if (birthday) updateFields.birthday = new Date(birthday);
+    if (birthday){
+        updateFields.birthday = new Date(birthday);
+        const currentYear = new Date().getFullYear();
+        const birthDate = new Date(birthday).getFullYear();
+        updateFields.age = currentYear - birthDate;
+    } 
     if (gender) updateFields.gender = gender;
     if (bio) updateFields.bio = bio;
 
