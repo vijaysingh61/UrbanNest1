@@ -19,6 +19,7 @@ const axios = require('axios');
 app.use(cors({
     origin: 'https://urban-nest-ruby.vercel.app', // Replace with your frontend's actual domain
     credentials: true,
+    methods : ["GET","POST"],
     allowedHeaders: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"],
 }));
 
