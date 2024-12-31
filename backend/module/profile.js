@@ -30,8 +30,6 @@ const profileSchema = new mongoose.Schema({
     
     phone: {
         type: String,
-
-        unique: true
     },
     profilePicture: {
         type: String,
@@ -43,6 +41,10 @@ const profileSchema = new mongoose.Schema({
     state: {
         type: String,
 
+    },
+     birthday: {
+        type: Date,
+        default: null,
     },
     bio: {
         type: String,

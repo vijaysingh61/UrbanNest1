@@ -14,21 +14,9 @@ function Profile() {
     const [editGender,setEditGender]  = useState(false)
     
     
-    const {userInfo,setUserInfo} = useContext(UserData)
+    const {userInfo,setUserInfo,loading,setLoading} = useContext(UserData)
     const imgurl = userInfo && 'http://localhost:3001/' + userInfo.profilePicture
-    useEffect(()=>{
-        console.log(userInfo)
-        const idk = async()=>{
-            const responce = await axios.get("http://localhost:3001/get-profile",{
-                headers: {
-                            'Content-Type': 'application/json',
-                    },
-                withCredentials:true
-            })
-            setUserInfo(responce.data)
-        }
-        idk();
-    },[])
+    
 
    
 
@@ -53,26 +41,76 @@ function Profile() {
         }
     }
     
-    const editProfile = async(e)=>{
-        e.preventDefault();
-        console.log(e.target)
-    }
+     const [phone, setPhone] = useState(userInfo?.phone || "");
+    const [birthday, setBirthday] = useState(userInfo?.birthday || "");
+    const [gender, setGender] = useState(userInfo?.gender || "");
+    const [bio, setBio] = useState(userInfo?.bio || "");
 
-    const {checkAuthStatus} = useContext(AuthContext)
+    const editProfile = async (field) => {
+        let payload = {};
+        const userId = userInfo._id;
+        // Determine the field to update
+        switch (field) {
+            case "phone":
+                payload = { phone,userId };
+                break;
+            case "birthday":
+                payload = { birthday,userId };
+                break;
+            case "gender":
+                payload = { gender,userId };
+                break;
+            case "bio":
+                payload = { bio,userId };
+                break;
+            default:
+                return;
+        }
+
+        try {
+            const response = await axios.put("http://localhost:3001/update-profile", payload, {
+                headers: { "Content-Type": "application/json" },
+                withCredentials: true,
+            });
+
+            // Update local userInfo state with the new value
+            setUserInfo((prev) => ({
+                ...prev,
+                ...payload,
+            }));
+            console.log()
+
+            // Close editing mode for the field
+            if (field === "phone") setEditPhone(false);
+            if (field === "birthday") setEditBirth(false);
+            if (field === "gender") setEditGender(false);
+            if (field === "bio") setEditBio(false);
+
+            console.log("Profile updated successfully:", response.data);
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        }
+    };
+
+    const {setIsAuthenticated} = useContext(AuthContext)
     const navigate = useNavigate();
     const handleLogout = async()=>{
         try{
+            setLoading(true)
             const responce = axios.get("http://localhost:3001/logout",{
                 headers:{
                     'Content-Type': 'application/json',
                 },
                 withCredentials:true
             })
-            await checkAuthStatus()
+            await setIsAuthenticated(false)
+            setUserInfo([])
             navigate("/")
-            
+            window.location.reload()
         }catch(e){
             console.log(e)
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -106,75 +144,145 @@ function Profile() {
                 <hr />
 
                 {/* Phone Number */}
-                <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-gray-600 text-sm">Phone number</h3>
-                    {editPhone?
-                    <div className='mt-2 shadow-2xl '>
-                        <input type='number' defaultValue={91} className='w-12 outline-none bg-gray-100 p-1 border-2 '></input>
-                        <input type='text' className='border-2 p-1 px-2 outline-none bg-gray-100'></input>
-                    </div>:
-                    <p className="text-gray-900">{userInfo && userInfo.phone || "N/A"}</p>
-                    }
-                    
-                </div>
-                <a href="#edit" onClick={()=>setEditPhone((prev)=>!prev)} className="text-blue-600 hover:underline">{editPhone?"cancel":"Edit"}</a>
-                </div>
-                <hr />
-
-                {/* Birthday */}
-                <div className="flex justify-between items-center w-full">
-                <div className='w-2/3'>
-                    <h3 className="text-gray-600 text-sm">Birthday</h3>
-                    {editBirth?
-                       <Birth></Birth> : <p className="text-gray-900">{userInfo && userInfo.birthday || "N/A"}</p>
-                    }
-                    
-                </div>
-                <a href="#edit" onClick={()=>setEditBirth((prev)=>!prev)} className="text-blue-600 hover:underline">{editBirth?"cancel":"Edit"}</a>
-                </div>
-                <hr />
-
-                {/* Identified As */}
-                <div className="flex justify-between items-center">
-                <div>
-                    <h3 className="text-gray-600 text-sm">Identified as</h3>
-                    {editGender?<Gender/>:<p className="text-gray-900">{userInfo && userInfo.gender || "N/A"}</p>}
-                    
-                </div>
-                <a href="#edit" onClick={()=>setEditGender((prev)=>!prev)} className="text-blue-600 hover:underline">{editGender?"cancel":"Edit"}</a>
-                </div>
-                <hr />
-
-
-                {/* About Me */}
-                <div className="flex justify-between items-center w-full">
-                <div className='w-2/3'>
-                    <h3 className="text-gray-600 text-sm">About me</h3>
-                    {editBio?
-                        <form className="flex flex-col items-start gap-4 p-4" onSubmit={editProfile}>
-                            {/* Text Area */}
-                            <div className="w-full">
-                                <textarea
-                                id="about"
-                                placeholder="Write something about you"
-                                className="w-full h-32 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                                ></textarea>
-                                <div className="flex justify-between mt-1 text-sm text-gray-500">
-                                <span></span>
-                                <span>0/2000</span>
-                                </div>
-                            </div>
-
-                            {/* Save Button */}
-                            <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800" type='submit'>
+                    {editPhone ? (
+                        <div className="mt-2 shadow-2xl">
+                            <span className="border w-13 inline-block pl-1">
+                                +<input
+                                    type="number"
+                                    defaultValue={91}
+                                    className="w-10 outline-none py-1"
+                                    disabled
+                                />
+                            </span>
+                            <input
+                                type="text"
+                                className="border p-1 px-2 outline-none"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
+                            <button
+                                className="bg-black text-white px-2 py-1 rounded hover:bg-gray-800 ml-2"
+                                onClick={() => editProfile("phone")}
+                            >
                                 Save
                             </button>
-                        </form>:<p className="text-gray-900">{userInfo && userInfo.about || "Add a description"}</p>}
-                    
+                        </div>
+                    ) : (
+                        <p className="text-gray-900">{userInfo?.phone || "N/A"}</p>
+                    )}
                 </div>
-                <a href="#edit" onClick={()=>setEditBio((prev)=>!prev)} className="text-blue-600 hover:underline">{editBio?"cancel":"Edit"}</a>
+                <a
+                    href="#edit"
+                    onClick={() => setEditPhone((prev) => !prev)}
+                    className="text-blue-600 hover:underline"
+                >
+                    {editPhone ? "Cancel" : "Edit"}
+                </a>
+            </div>
+            <hr />
+
+            {/* Birthday */}
+            <div className="flex justify-between items-center w-full">
+                <div className="w-2/3">
+                    <h3 className="text-gray-600 text-sm">Birthday</h3>
+                    {editBirth ? (
+                        <><input
+                            type="date"
+                            className="border p-1 px-2 outline-none"
+                            value={birthday}
+                            onChange={(e) => setBirthday(e.target.value)}
+                        />
+                            <button
+                                className="bg-black text-white px-2 py-1 rounded hover:bg-gray-800 ml-2"
+                                onClick={() => editProfile("birthday")}
+                            >
+                                Save
+                            </button>
+                        </>
+                    ) : (
+                        <p className="text-gray-900">{userInfo?.birthday || "N/A"}</p>
+                    )}
                 </div>
+                <a
+                    href="#edit"
+                    onClick={() => setEditBirth((prev) => !prev)}
+                    className="text-blue-600 hover:underline"
+                >
+                    {editBirth ? "Cancel" : "Edit"}
+                </a>
+            </div>
+            <hr />
+
+            {/* Identified As */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h3 className="text-gray-600 text-sm">Identified as</h3>
+                    {editGender ? (
+                        <><select
+                            className="border p-1 px-2 outline-none"
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                        >
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <button
+                                className="bg-black text-white px-2 py-1 rounded hover:bg-gray-800 ml-2"
+                                onClick={() => editProfile("gender")}
+                            >
+                                Save
+                            </button>
+                        </>
+                    ) : (
+                        <p className="text-gray-900">{userInfo?.gender || "N/A"}</p>
+                    )}
+                </div>
+                <a
+                    href="#edit"
+                    onClick={() => setEditGender((prev) => !prev)}
+                    className="text-blue-600 hover:underline"
+                >
+                    {editGender ? "Cancel" : "Edit"}
+                </a>
+            </div>
+            <hr />
+
+            {/* bio Me */}
+            <div className="flex justify-between items-center w-full">
+                <div className="w-2/3">
+                    <h3 className="text-gray-600 text-sm">About me</h3>
+                    {editBio ? (
+                        <><textarea
+                            id="bio"
+                            placeholder="Write something About you"
+                            className="w-full h-32 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                        />
+                        <button
+                                className="bg-black text-white px-2 py-1 rounded hover:bg-gray-800 ml-2"
+                                onClick={() => editProfile("bio")}
+                            >
+                                Save
+                            </button></>
+                        
+                    ) : (
+                        <p className="text-gray-900">{userInfo?.bio || "Add a description"}</p>
+                    )}
+                </div>
+                <a
+                    href="#edit"
+                    onClick={() => setEditBio((prev) => !prev)}
+                    className="text-blue-600 hover:underline"
+                >
+                    {editBio ? "Cancel" : "Edit"}
+                </a>
+            </div>
             </div>
             </div>
 
@@ -217,77 +325,7 @@ function Profile() {
   )
 }
 
-function Birth(){
-    return (
-        <div className="flex  gap-4 w-60 p-4">
-            <div className="flex items-center gap-2">
-                <label htmlFor="year" className="text-sm">
-                Year
-                </label>
-                <input
-                type="text"
-                id="year"
-                placeholder="1990"
-                className="w-14 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-            </div>
-            <div className="flex items-center gap-2">
-                <label htmlFor="month" className="text-sm">
-                Month
-                </label>
-                <input
-                type="text"
-                id="month"
-                placeholder="11"
-                className="w-14 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-            </div>
-            <div className="flex items-center gap-2">
-                <label htmlFor="day" className="text-sm">
-                Day
-                </label>
-                <input
-                type="text"
-                id="day"
-                placeholder="11"
-                className="w-14 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-            </div>
-            <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-                Save
-            </button>
-            </div>
-    )
-}
 
-
-function Gender() {
-  return (
-    <div className="flex flex-col items-start gap-4 p-4">
-      {/* Dropdown */}
-      <div>
-        <label htmlFor="pronoun" className="sr-only">
-          Pronoun
-        </label>
-        <select
-          id="pronoun"
-          className="w-40 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-          defaultValue="He/Him"
-        >
-          <option value="He/Him">He/Him</option>
-          <option value="She/Her">She/Her</option>
-          <option value="They/Them">They/Them</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-
-      {/* Save Button */}
-      <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-        Save
-      </button>
-    </div>
-  );
-}
 
 
 

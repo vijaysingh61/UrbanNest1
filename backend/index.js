@@ -190,6 +190,48 @@ app.post("/profile-pic",upload.single("profilePicture"), async(req,res)=>{
     }
 })
 
+app.put("/update-profile", async (req, res) => {
+  try {
+    
+    const userId = req.body.userId; 
+    console.log(userId)
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Destructure the fields to update from the request body
+    const { phone, birthday, gender, bio } = req.body;
+
+    // Validate input (optional)
+    if (!phone && !birthday && !gender && !bio) {
+      return res.status(400).json({ error: "No valid fields to update" });
+    }
+
+    // Build the update object dynamically
+    const updateFields = {};
+    if (phone) updateFields.phone = phone.toString();
+    if (birthday) updateFields.birthday = new Date(birthday);
+    if (gender) updateFields.gender = gender;
+    if (bio) updateFields.bio = bio;
+
+    // Update the user in the database
+    const updatedUser = await profile.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/signup",async(req,res)=>{
     const {email,username,password} = req.body;
     
@@ -244,10 +286,11 @@ app.post("/login",async(req,res)=>{
     
 })
 
-app.get("/logout",async(req,res)=>{
+app.get("/logout", async (req, res) => {
     res.cookie('token', '', { expires: new Date(0), httpOnly: true, secure: true, path: '/' });
     res.send('Logged out');
-})
+});
+
 
 app.get('/api/check-auth', (req, res) => {
     const token = req.cookies.token;

@@ -22,7 +22,7 @@ const Room = ({props}) => {
         </button>
         <div className="bg-gray-300 h-56 flex items-center justify-center overflow-hidden">
             {props.images[0] ?
-                <img src={imgurl} className='w-full min-h-fit' alt='img'></img> : 
+                <img src={imgurl} className='w-full min-h-full' alt='img'></img> :
                 <FaUser className="text-gray-500 text-6xl" />
             }
          

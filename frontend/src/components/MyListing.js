@@ -1,11 +1,13 @@
-    import React, { useEffect, useState } from "react";
+    import React, { useContext, useEffect, useState } from "react";
     import Room from "./Room";
     import axios from "axios";
 import { FaUser } from "react-icons/fa";
+import { UserData } from "./context/userData";
 
     const MyListing = () => {
 
         const [roomArr,setRoomArr] = useState([]);
+        const {userInfo} = useContext(UserData)
 
         useEffect(()=>{
             
@@ -26,20 +28,20 @@ import { FaUser } from "react-icons/fa";
             }
             idk();
         },[])
-        const imgurl = roomArr[0] && 'http://localhost:3001/' + roomArr[0].profile.profilePicture;
+        const imgurl = userInfo && 'http://localhost:3001/' + userInfo.profilePicture;
 return (
     <div className="p-6 bg-gray-100 min-h-screen pt-24 flex flex-col justify-center items-center">
         {/* User Profile Section */}
         <div className="flex items-center space-x-4 bg-white p-4 rounded shadow w-2/3 justify-between">
             <div className="flex items-center">
                 <div className=" h-16 w-16 rounded-full flex items-center overflow-hidden bg-gray-200 mx-2  justify-center text-gray-400">
-                    {roomArr[0] && roomArr[0].profile.profilePicture ?                            
+                    {userInfo && userInfo.profilePicture ?                            
                         <img src={imgurl} className="w-full h-full" alt='profile'/> :
                         <FaUser className="text-gray-500 mt-1 text-4xl" />
                     }
                 </div>
-            <h2 className="text-xl font-medium capitalize">{roomArr[0] && roomArr[0].profile.name},
-                <span className="text-md text-gray-700">{roomArr[0] && roomArr[0].profile.age || " age"}</span>
+            <h2 className="text-xl font-medium capitalize">{userInfo && userInfo.name},
+                <span className="text-md text-gray-700">{userInfo && userInfo.age || " age"}</span>
             </h2>
             <span className="text-gray-500">♂️</span>
             </div>
