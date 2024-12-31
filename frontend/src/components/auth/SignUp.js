@@ -21,7 +21,7 @@ const SignUp = () => {
             password
         }
         try{
-            const responce = await axios.post("http://localhost:3001/signup",formData,{
+            const responce = await axios.post("https://urban-nest-mygv.vercel.app/signup",formData,{
                 header:{
                     'Content-Type': 'application/json',
                 },
