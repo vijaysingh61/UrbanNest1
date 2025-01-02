@@ -1,12 +1,13 @@
 import React from 'react';
 import { FaHeart, FaUser, FaEnvelope, FaPhone, FaMale } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import url from './auth/backendUrl';
 
 
 const Room = ({props}) => {
 
-    const imgurl = 'http://localhost:3001/' + props.images[0];
-    const profileImgUrl = 'http://localhost:3001/' + props.profile.profilePicture;
+    const imgurl = url+'/' + props.images[0];
+    const profileImgUrl = url+'/' + props.profile.profilePicture;
 
     const navigate = useNavigate();
     const handleClick = ()=>{

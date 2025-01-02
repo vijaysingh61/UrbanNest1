@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import url from '../auth/backendUrl';
 
 export const AuthContext = createContext();
 
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await axios.get('https://urban-nest-mygv.vercel.app/api/check-auth', { withCredentials: true });
+            const response = await axios.get(url+'/api/check-auth', { withCredentials: true });
             setIsAuthenticated(response.data.authenticated);
         } catch (error) {
             setIsAuthenticated(false);

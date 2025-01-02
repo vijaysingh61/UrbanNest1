@@ -4,6 +4,7 @@
 import { FaUser } from "react-icons/fa";
 import { IoMdFemale, IoMdMale } from "react-icons/io";
 import { UserData } from "./context/userData";
+import url from "./auth/backendUrl";
 
     const MyListing = () => {
 
@@ -14,7 +15,7 @@ import { UserData } from "./context/userData";
             
             const idk = async()=>{
                 try{
-                    const responce = await axios.get('http://localhost:3001/myListing',{
+                    const responce = await axios.get(url+'/myListing',{
                         headers: {
                             'Content-Type': 'application/json',
                         },

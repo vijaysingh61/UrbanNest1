@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
+import url from './backendUrl';
 
 const SignUp = () => {
 
@@ -21,7 +22,7 @@ const SignUp = () => {
             password
         }
         try{
-            const responce = await axios.post("https://urban-nest-mygv.vercel.app/signup",formData,{
+            const responce = await axios.post(url+"/signup",formData,{
                 header:{
                     'Content-Type': 'application/json',
                 },

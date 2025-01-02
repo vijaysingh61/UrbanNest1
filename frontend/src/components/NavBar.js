@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { AuthContext } from './context/AuthProvider'
 import { FaUser } from 'react-icons/fa';
 import { UserData } from './context/userData';
+import url from './auth/backendUrl';
 
 function NavBar() {
     const {userInfo} = useContext(UserData)
@@ -10,7 +11,7 @@ function NavBar() {
     useEffect(()=>{
         checkAuthStatus();
     })
-    const imgurl = userInfo && 'http://localhost:3001/' + userInfo.profilePicture;
+    const imgurl = userInfo && url+'/' + userInfo.profilePicture;
   return (
     <div className='w-full h-20 fixed z-50'>
         <nav className="bg-white shadow-lg p-4 h-20 flex items-center z-50">

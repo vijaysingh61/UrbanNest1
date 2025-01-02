@@ -3,6 +3,7 @@
     import { useNavigate } from 'react-router-dom';
 
     import { FiMapPin } from 'react-icons/fi';
+import url from './auth/backendUrl';
 
     const RoomListing = () => {
     const [address, setAddress] = useState({
@@ -52,7 +53,7 @@
         formData.append('amenities', JSON.stringify(amenities));
 
         try {
-            const res = await axios.post("http://localhost:3001/list", formData, {
+            const res = await axios.post(url+"/list", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

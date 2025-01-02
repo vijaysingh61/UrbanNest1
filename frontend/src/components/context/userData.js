@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthProvider";
+import url from "../auth/backendUrl";
 
 const UserData = createContext();
 
@@ -22,7 +23,7 @@ const UserDataProvider = ({children})=>{
             return;
         }
         const idk = async()=>{
-            const responce = await axios.get("http://localhost:3001/get-profile",{
+            const responce = await axios.get(url+"/get-profile",{
                 headers: {
                             'Content-Type': 'application/json',
                     },

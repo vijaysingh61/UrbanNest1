@@ -4,6 +4,7 @@ import axios from 'axios'
 import { TbCameraPlus } from 'react-icons/tb'
 import { AuthContext } from './context/AuthProvider'
 import { UserData } from './context/userData'
+import url from './auth/backendUrl'
 
 
 
@@ -15,7 +16,7 @@ function Profile() {
     
     
     const {userInfo,setUserInfo,loading,setLoading} = useContext(UserData)
-    const imgurl = userInfo && 'http://localhost:3001/' + userInfo.profilePicture
+    const imgurl = userInfo && url+'/' + userInfo.profilePicture
     
 
    
@@ -26,7 +27,7 @@ function Profile() {
         const formData = new FormData();
         formData.append("profilePicture",e.target.files[0]);
         try {
-            const res = await axios.post("http://localhost:3001/profile-pic", formData, {
+            const res = await axios.post(url+"/profile-pic", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -16,6 +16,7 @@ import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import url from './auth/backendUrl';
 
 function findCityWithState(query) {
         for (const [state, cities] of Object.entries(cities2)) {
@@ -53,7 +54,7 @@ const AvailableRooms = () => {
         const idk = async()=>{
             
             try{
-                const responce = await axios.get('http://localhost:3001/get-rooms',
+                const responce = await axios.get(url+'/get-rooms',
                 {
                      params: {
                         budget: bgInput,
