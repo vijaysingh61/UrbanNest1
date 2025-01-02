@@ -1,2 +1,2 @@
-const url = "http://localhost:3001";
+const url = "https://urbannest1.onrender.com";
 export default url;
