@@ -14,6 +14,7 @@ const multer = require('multer');
 const path = require('path')
 const axios = require('axios');
 const fs = require('fs')
+const { upload } = require('./megaService'); 
 
 
 
@@ -32,18 +33,7 @@ mongoose.connection.on('connected',()=>{
     console.log("database connected")
 })
 
-//multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb('', './images/uploads')
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.fieldname + '-' + uniqueSuffix)
-  }
-})
 
-const upload = multer({ storage: storage })
 
 //getin coordinates
 async function getLatLngFromAddress(addressString) {
@@ -88,11 +78,13 @@ app.post('/list',upload.array('images',5), async(req, res) => {
         if (!coordinates) {
             return res.status(400).json({ message: 'Unable to fetch coordinates for the provided address' });
         }
+        const imageUrls = req.files.map(file => file.path); 
+        
         const createRoom = await room.create({ 
             profile:user1._id,
             ...data, 
             address : {...address,coordinates},
-            images: req.files.map(file => file.path) 
+            images: imageUrls 
         });
         
         await createRoom.save();
